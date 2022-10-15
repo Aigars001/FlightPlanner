@@ -1,11 +1,7 @@
-﻿using System.Text.Json.Serialization;
-
-namespace flightPlanner.Models
+﻿namespace flightPlanner.Models
 {
-    public class Flight
+    public class AddFlightRequest
     {
-        [JsonIgnore]
-        public int Id { get; set; }
         public Airport From { get; set; }
         public Airport To { get; set; }
         public string Carrier { get; set; }

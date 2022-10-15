@@ -105,11 +105,11 @@ namespace flightPlanner.Storage
         public static PageResult SearchFlight(SearchFlightRequest req)
         {
             var flightList = new List<Flight>();
-            lock(_flightLock)
+            lock (_flightLock)
             {
-                foreach(Flight f in _flights)
+                foreach (Flight f in _flights)
                 {
-                    if(req.From == f.From.AirportCode &&
+                    if (req.From == f.From.AirportCode &&
                        req.To == f.To.AirportCode &&
                        DateTime.Parse(req.DepartureDate) == DateTime.Parse(f.DepartureTime).Date)
                     {
@@ -117,7 +117,7 @@ namespace flightPlanner.Storage
                     }
                 }
 
-                return new PageResult(flightList.ToArray());
+                return new PageResult();
             }
         }
 
