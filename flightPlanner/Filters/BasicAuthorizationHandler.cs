@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using FlightPlannerCore.Interfaces;
+using FlightPlannerCore.Models;
+using FlightPlannerCore.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
 using System.Net.Http.Headers;
@@ -10,10 +13,12 @@ namespace flightPlanner.Filters
 {
     public class BasicAuthorizationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
+        private readonly IEntityService<User> _userService;
         public BasicAuthorizationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options,
-            ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock) : 
+            ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock, IEntityService<User> userService) : 
             base(options, logger, encoder, clock)
         {
+            _userService = userService;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -32,9 +37,8 @@ namespace flightPlanner.Filters
                 var credentialBytes = Convert.FromBase64String(authHeader.Parameter);
                 var credentials = Encoding.UTF8.GetString(credentialBytes).Split(new[] { ':' }, 2);
                 var username = credentials[0];
-                var password = credentials[1];
-                authorized = (username == "codelex-admin" && password == "Password123");
-                //user = await _userService.Authenticate(username, password);
+                var password = Convert.ToBase64String(Encoding.UTF8.GetBytes(credentials[1].ToCharArray()));
+                authorized = _userService.Query().Any(u => u.UserName == username && u.Password == password);
             }
             catch
             {
