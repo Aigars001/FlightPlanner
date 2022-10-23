@@ -1,5 +1,13 @@
+using AutoMapper;
 using flightPlanner;
 using flightPlanner.Filters;
+using FlightPlannerCore.Models;
+using FlightPlannerCore.Services;
+using FlightPlannerCore.Validations;
+using FlightPlannerCore.Validations.SearchFlightRequestValidations;
+using flightPlannerData;
+using FlightPlannerData;
+using FlightPlannerServices;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +27,30 @@ builder.Services.AddDbContext<FlightPlannerDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("Flight-Planner"));
 });
+
+builder.Services.AddScoped<IFlightPlannerDbContext, FlightPlannerDbContext>();
+
+builder.Services.AddScoped<IDbService, DbService>();
+
+builder.Services.AddScoped<IEntityService<Airport>, EntityService<Airport>>();
+builder.Services.AddScoped<IEntityService<Flight>, EntityService<Flight>>();
+builder.Services.AddScoped<IEntityService<User>, EntityService<User>>();
+
+builder.Services.AddScoped<IFlightService, FlightService>();
+
+builder.Services.AddScoped<IFlightValidator, CarrierValidator>();
+builder.Services.AddScoped<IFlightValidator, FlightTimeValidator>();
+builder.Services.AddScoped<IFlightValidator, FlightAirportValidator>();
+
+builder.Services.AddScoped<IAirportValidator, AirportCodeValidator>();
+builder.Services.AddScoped<IAirportValidator, AirportCountryValidator>();
+builder.Services.AddScoped<IAirportValidator, AirportCityValidator>();
+
+builder.Services.AddSingleton<IMapper>(AutoMapperConfig.CreateMapper());
+
+builder.Services.AddScoped<ISearchFlightRequestValidator, AirportValueValidator>();
+builder.Services.AddScoped<ISearchFlightRequestValidator, SameAirportValidator>();
+builder.Services.AddScoped<ISearchFlightRequestValidator, DepartureDateValidator>();
 
 var app = builder.Build();
 

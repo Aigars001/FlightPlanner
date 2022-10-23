@@ -2,17 +2,19 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using flightPlanner;
+using flightPlannerData;
 
 #nullable disable
 
 namespace flightPlanner.Migrations
 {
     [DbContext(typeof(FlightPlannerDbContext))]
-    partial class FlightPlannerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221018141907_UserTable")]
+    partial class UserTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,7 +23,7 @@ namespace flightPlanner.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("flightPlanner.Models.Airport", b =>
+            modelBuilder.Entity("flightPlannerCore.Models.Airport", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -46,7 +48,7 @@ namespace flightPlanner.Migrations
                     b.ToTable("Airports");
                 });
 
-            modelBuilder.Entity("flightPlanner.Models.Flight", b =>
+            modelBuilder.Entity("flightPlannerCore.Models.Flight", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -81,15 +83,36 @@ namespace flightPlanner.Migrations
                     b.ToTable("Flights");
                 });
 
-            modelBuilder.Entity("flightPlanner.Models.Flight", b =>
+            modelBuilder.Entity("FlightPlannerCore.Models.User", b =>
                 {
-                    b.HasOne("flightPlanner.Models.Airport", "From")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("flightPlannerCore.Models.Flight", b =>
+                {
+                    b.HasOne("flightPlannerCore.Models.Airport", "From")
                         .WithMany()
                         .HasForeignKey("FromId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("flightPlanner.Models.Airport", "To")
+                    b.HasOne("flightPlannerCore.Models.Airport", "To")
                         .WithMany()
                         .HasForeignKey("ToId")
                         .OnDelete(DeleteBehavior.Cascade)
